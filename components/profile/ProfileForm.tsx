@@ -76,7 +76,7 @@ export function ProfileForm() {
         email: profile.email || user.email || '',
         instagramHandle: profile.instagramHandle || '',
         niche: profile.niche || '',
-        followerCount: profile.followerCount || '',
+        followerCount: Number(profile.followerCount) || 0,
         location: profile.location || '',
         bio: profile.bio || '',
         profileImage: profile.profileImage || user.photoURL || '',
@@ -159,15 +159,20 @@ export function ProfileForm() {
             </div>
             <div className="space-y-2">
               <Label>Follower Count *</Label>
-              <Select value={profile.followerCount || ''} onValueChange={(value) => setProfile({ ...profile, followerCount: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select range" />
-                </SelectTrigger>
-                <SelectContent>
-                  {FOLLOWER_RANGES.map((range) => (
-                    <SelectItem key={range} value={range}>
-                      {range}
-                    </SelectItem>
+              <Select
+  value={profile.followerCount?.toString() || ''}
+  onValueChange={(value) =>
+    setProfile({ ...profile, followerCount: Number(value) })
+  }
+>
+  <SelectTrigger>
+    <SelectValue placeholder="Select range" />
+  </SelectTrigger>
+  <SelectContent>
+    {FOLLOWER_RANGES.map((range) => (
+      <SelectItem key={range.label} value={range.min.toString()}>
+        {range.label}
+      </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
