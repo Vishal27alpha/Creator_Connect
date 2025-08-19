@@ -50,12 +50,12 @@ export function CreatorFiltersComponent({ filters, onFiltersChange }: CreatorFil
         {/* Niche Filter */}
         <div className="space-y-2">
           <Label>Niche</Label>
-          <Select value={filters.niche} onValueChange={(value) => updateFilter('niche', value)}>
+          <Select value={filters.niche || "all"} onValueChange={(value) => updateFilter('niche', value)}>
             <SelectTrigger>
               <SelectValue placeholder="All niches" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All niches</SelectItem>
+              <SelectItem value="all">All niches</SelectItem>
               {NICHES.map((niche) => (
                 <SelectItem key={niche} value={niche}>
                   {niche}
@@ -68,18 +68,19 @@ export function CreatorFiltersComponent({ filters, onFiltersChange }: CreatorFil
         {/* Follower Range Filter */}
         <div className="space-y-2">
           <Label>Follower Count</Label>
-          <Select value={filters.followerRange} onValueChange={(value) => updateFilter('followerRange', value)}>
+          <Select value={filters.followerRange || "all"} onValueChange={(value) => updateFilter('followerRange', value)}>
             <SelectTrigger>
               <SelectValue placeholder="All ranges" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All ranges</SelectItem>
-              {FOLLOWER_RANGES.map((range) => (
-                <SelectItem key={range} value={range}>
-                  {range}
-                </SelectItem>
-              ))}
-            </SelectContent>
+  <SelectItem value="all">All ranges</SelectItem>
+  {FOLLOWER_RANGES.map((range) => (
+    <SelectItem key={range.label} value={range.label}>
+      {range.label}
+    </SelectItem>
+  ))}
+</SelectContent>
+
           </Select>
         </div>
 

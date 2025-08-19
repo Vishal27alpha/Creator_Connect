@@ -3,19 +3,17 @@
 import { useState, useEffect, useMemo } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Creator, CreatorFilters } from '@/types/creator';
+import { Creator, CreatorFilters,FOLLOWER_RANGES } from '@/types/creator';
 import { CreatorCard } from '@/components/creators/CreatorCard';
 import { CreatorFiltersComponent } from '@/components/creators/CreatorFilters';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Loader2, Search, Users } from 'lucide-react';
+import { Loader2, Users } from 'lucide-react';
 
 export default function DirectoryPage() {
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<CreatorFilters>({
-    niche: '',
-    followerRange: '',
+    niche: 'all',
+    followerRange: 'all',
     location: '',
     searchQuery: '',
   });
@@ -26,9 +24,14 @@ export default function DirectoryPage() {
 
   const loadCreators = async () => {
     try {
-      const q = query(collection(db, 'creators'), orderBy('createdAt', 'desc'));
+      const q = collection(db, 'creators');
       const querySnapshot = await getDocs(q);
-      const creatorsData = querySnapshot.docs.map(doc => ({
+      console.log('creators count:', querySnapshot.size);
+      console.log(
+        'raw docs:',
+        querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
+      );
+      const creatorsData = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       })) as Creator[];
@@ -42,28 +45,33 @@ export default function DirectoryPage() {
 
   const filteredCreators = useMemo(() => {
     return creators.filter((creator) => {
-      // Search query filter
+      // 🔹 Search query filter
       if (filters.searchQuery) {
         const searchLower = filters.searchQuery.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           creator.name.toLowerCase().includes(searchLower) ||
-          creator.instagramHandle.toLowerCase().includes(searchLower) ||
+          creator.instagramHandle.toLowerCase().includes(searchLower) || // 🔑 fixed field
           creator.bio.toLowerCase().includes(searchLower);
-        
+
         if (!matchesSearch) return false;
       }
 
-      // Niche filter
-      if (filters.niche && creator.niche !== filters.niche) {
+      // 🔹 Niche filter (skip if "all")
+      if (filters.niche && filters.niche !== 'all' && creator.niche !== filters.niche) {
         return false;
       }
 
-      // Follower range filter
-      if (filters.followerRange && creator.followerCount !== filters.followerRange) {
-        return false;
+      // 🔹 Follower range filter (skip if "all")
+      if (filters.followerRange && filters.followerRange !== 'all') {
+        const range = FOLLOWER_RANGES.find((r) => r.label === filters.followerRange);
+        if (range && !(creator.followerCount >= range.min && creator.followerCount <= range.max)) {
+          return false;
+        }
       }
+      
+      
 
-      // Location filter
+      // 🔹 Location filter
       if (filters.location) {
         const locationLower = filters.location.toLowerCase();
         if (!creator.location.toLowerCase().includes(locationLower)) {
