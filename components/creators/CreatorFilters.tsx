@@ -1,4 +1,4 @@
-'use client';
+/*'use client';
 
 import { CreatorFilters, NICHES, FOLLOWER_RANGES } from '@/types/creator';
 import { Input } from '@/components/ui/input';
@@ -32,7 +32,7 @@ export function CreatorFiltersComponent({ filters, onFiltersChange }: CreatorFil
         <CardTitle className="text-lg">Filter Creators</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Search */}
+       
         <div className="space-y-2">
           <Label htmlFor="search">Search</Label>
           <div className="relative">
@@ -47,7 +47,7 @@ export function CreatorFiltersComponent({ filters, onFiltersChange }: CreatorFil
           </div>
         </div>
 
-        {/* Niche Filter */}
+       
         <div className="space-y-2">
           <Label>Niche</Label>
           <Select value={filters.niche || "all"} onValueChange={(value) => updateFilter('niche', value)}>
@@ -65,7 +65,7 @@ export function CreatorFiltersComponent({ filters, onFiltersChange }: CreatorFil
           </Select>
         </div>
 
-        {/* Follower Range Filter */}
+       
         <div className="space-y-2">
           <Label>Follower Count</Label>
           <Select value={filters.followerRange || "all"} onValueChange={(value) => updateFilter('followerRange', value)}>
@@ -84,7 +84,7 @@ export function CreatorFiltersComponent({ filters, onFiltersChange }: CreatorFil
           </Select>
         </div>
 
-        {/* Location Filter */}
+   
         <div className="space-y-2">
           <Label htmlFor="location">Location</Label>
           <Input
@@ -96,5 +96,110 @@ export function CreatorFiltersComponent({ filters, onFiltersChange }: CreatorFil
         </div>
       </CardContent>
     </Card>
+  );
+}*/
+'use client';
+
+import { useState } from 'react';
+import { CreatorFilters, FOLLOWER_RANGES, NICHES } from '@/types/creator';
+
+interface Props {
+  filters: CreatorFilters;
+  onFiltersChange: (filters: CreatorFilters) => void;
+}
+
+export function CreatorFiltersComponent({ filters, onFiltersChange }: Props) {
+  const [customNiche, setCustomNiche] = useState('');
+
+  const handleChange = (field: keyof CreatorFilters, value: string) => {
+    onFiltersChange({
+      ...filters,
+      [field]: value,
+    });
+  };
+
+  return (
+    <div className="p-4 border rounded-lg bg-card shadow-sm space-y-4">
+      {/* Search */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Search</label>
+        <input
+          type="text"
+          value={filters.searchQuery}
+          onChange={(e) => handleChange('searchQuery', e.target.value)}
+          placeholder="Search by name or handle..."
+          className="w-full px-3 py-2 border rounded-md bg-background text-foreground"
+        />
+      </div>
+
+      {/* Niche */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Niche</label>
+        <select
+          value={NICHES.includes(filters.niche) ? filters.niche : 'Other'}
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val === 'Other') {
+              handleChange('niche', customNiche); // keep whatever user typed
+            } else {
+              handleChange('niche', val);
+              setCustomNiche('');
+            }
+          }}
+          className="w-full px-3 py-2 border rounded-md bg-background text-foreground"
+        >
+          <option value="all">All</option>
+          {NICHES.map((niche) => (
+            <option key={niche} value={niche}>
+              {niche}
+            </option>
+          ))}
+          <option value="Other">Other (write your own)</option>
+        </select>
+
+        {/* If "Other" selected → show text input */}
+        {(!NICHES.includes(filters.niche) && filters.niche !== 'all') && (
+          <input
+            type="text"
+            value={customNiche}
+            onChange={(e) => {
+              setCustomNiche(e.target.value);
+              handleChange('niche', e.target.value);
+            }}
+            placeholder="Enter custom niche..."
+            className="mt-2 w-full px-3 py-2 border rounded-md bg-background text-foreground"
+          />
+        )}
+      </div>
+
+      {/* Followers */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Follower Count</label>
+        <select
+          value={filters.followerRange}
+          onChange={(e) => handleChange('followerRange', e.target.value)}
+          className="w-full px-3 py-2 border rounded-md bg-background text-foreground"
+        >
+          <option value="all">All ranges</option>
+          {FOLLOWER_RANGES.map((range) => (
+            <option key={range.label} value={range.label}>
+              {range.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Location */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Location</label>
+        <input
+          type="text"
+          value={filters.location}
+          onChange={(e) => handleChange('location', e.target.value)}
+          placeholder="Enter city or country..."
+          className="w-full px-3 py-2 border rounded-md bg-background text-foreground"
+        />
+      </div>
+    </div>
   );
 }

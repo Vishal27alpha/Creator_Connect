@@ -34,20 +34,18 @@ export default function CreatorDetailPage() {
 
   const loadCreator = async (id: string) => {
     try {
-      // Load main creator
       const docRef = doc(db, 'creators', id);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
         const creatorData = { ...docSnap.data(), id: docSnap.id } as Creator;
         setCreator(creatorData);
-        
-        // Load similar creators (mock - same niche, different creator)
+
+        // Load similar creators
         const q = query(collection(db, 'creators'), limit(6));
         const querySnapshot = await getDocs(q);
-        const allCreators = querySnapshot.docs
-          .map(doc => ({ ...doc.data(), id: doc.id })) as Creator[];
-        
+        const allCreators = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as Creator[];
+
         const similar = allCreators
           .filter(c => c.id !== id && c.niche === creatorData.niche)
           .slice(0, 3);
@@ -90,6 +88,21 @@ export default function CreatorDetailPage() {
     );
   }
 
+  // Convert Firestore Timestamp safely
+  let joinedDate = "Unknown";
+  try {
+    if (creator.createdAt) {
+      const dateObj =
+        (creator.createdAt as any).toDate?.() || new Date(creator.createdAt);
+      joinedDate = dateObj.toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+  } catch (err) {
+    console.warn("Invalid createdAt format", creator.createdAt);
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
@@ -97,7 +110,7 @@ export default function CreatorDetailPage() {
         <Card className="mb-8">
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row gap-8">
-              {/* Avatar and Basic Info */}
+              {/* Avatar */}
               <div className="flex flex-col items-center md:items-start">
                 <Avatar className="h-32 w-32 mb-4">
                   <AvatarImage src={creator.profileImage} alt={creator.name} />
@@ -114,7 +127,7 @@ export default function CreatorDetailPage() {
               {/* Details */}
               <div className="flex-1">
                 <div className="mb-4">
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{creator.name}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{creator.name}</h1>
                   <div className="flex items-center text-lg text-gray-600 mb-2">
                     <Instagram className="h-5 w-5 mr-2" />
                     <a
@@ -145,27 +158,38 @@ export default function CreatorDetailPage() {
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Calendar className="h-8 w-8 mx-auto text-green-600 mb-2" />
                     <div className="font-semibold text-lg text-gray-900">
-                      {new Date(creator.createdAt).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        year: 'numeric' 
-                      })}
+                      {joinedDate}
                     </div>
                     <div className="text-sm text-gray-600">Joined</div>
                   </div>
                 </div>
 
-                {/* Niche Badge */}
+                {/* Niche */}
                 <div className="mb-4">
                   <Badge variant="secondary" className="bg-purple-50 text-purple-700 text-sm px-3 py-1">
                     {creator.niche}
                   </Badge>
                 </div>
+{/* Instagram Bio */}
+<div className="mb-4">
+  <h3 className="text-1xl font-bold text-gray-900 dark:text-gray-100">Instagram Bio</h3>
+  <p className="text-gray-700 leading-relaxed">
+    {creator.bio && creator.bio.trim() !== "" 
+      ? creator.bio 
+      : "No bio provided."}
+  </p>
+</div>
 
-                {/* Bio */}
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">About</h3>
-                  <p className="text-gray-700 leading-relaxed">{creator.bio}</p>
-                </div>
+{/* About You */}
+<div>
+  <h3 className="text-1xl font-bold text-gray-900 dark:text-gray-100">About </h3>
+  <p className="text-gray-700 leading-relaxed">
+    {creator.about && creator.about.trim() !== "" 
+      ? creator.about 
+      : "No about info yet."}
+  </p>
+</div>
+
               </div>
             </div>
           </CardContent>

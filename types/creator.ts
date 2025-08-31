@@ -8,6 +8,7 @@ export interface Creator {
   followerCount: number;
   location: string;
   bio: string;
+  about?: string;
   profileImage?: string;
   createdAt: Date|any;
   updatedAt: Date|any;

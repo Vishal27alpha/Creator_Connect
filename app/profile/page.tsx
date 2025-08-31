@@ -9,10 +9,13 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Profile</h1>
-            <p className="text-gray-600">
-              Complete your profile to connect with other creators
-            </p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+  Your Profile
+</h1>
+<p className="text-gray-600 dark:text-gray-300">
+  Complete your profile to connect with other creators
+</p>
+
           </div>
           <ProfileForm />
         </div>

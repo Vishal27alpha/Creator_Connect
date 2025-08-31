@@ -65,9 +65,10 @@ export default function HomePage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              How CreatorConnect Works
-            </h2>
+          <h2 className="text-3xl font-bold text-foreground">
+  How CreatorConnect Works
+</h2>
+
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Simple steps to discover, connect, and collaborate with creators in your niche
             </p>
@@ -79,7 +80,10 @@ export default function HomePage() {
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
                   <Users className="h-8 w-8 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Create Your Profile</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+  Create Your Profile
+</h3>
+
                 <p className="text-gray-600">
                   Set up your creator profile with your Instagram handle, niche, 
                   follower count, and collaboration interests.
@@ -92,7 +96,10 @@ export default function HomePage() {
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                   <Search className="h-8 w-8 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Discover Creators</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+  Discover Creators
+</h3>
+
                 <p className="text-gray-600">
                   Browse and filter creators by niche, follower count, location, 
                   and find perfect collaboration matches.
@@ -105,7 +112,10 @@ export default function HomePage() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                   <MessageCircle className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">Connect & Collaborate</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+ Connect & Collaborate
+</h3>
+
                 <p className="text-gray-600">
                   Reach out directly via email to discuss partnerships, 
                   sponsorships, and creative collaborations.
@@ -214,9 +224,10 @@ export default function HomePage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Ready to Start Collaborating?
-            </h2>
+          <h2 className="text-3xl font-bold text-foreground">
+  Ready to start Collaborating?
+</h2>
+
             <p className="text-lg text-gray-600 mb-8">
               Join thousands of creators already using CreatorConnect to find 
               their next collaboration partner.
