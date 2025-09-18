@@ -112,12 +112,17 @@ export default function CreatorDetailPage() {
             <div className="flex flex-col md:flex-row gap-8">
               {/* Avatar */}
               <div className="flex flex-col items-center md:items-start">
-                <Avatar className="h-32 w-32 mb-4">
-                  <AvatarImage src={creator.profileImage} alt={creator.name} />
-                  <AvatarFallback className="text-3xl bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                    {creator.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
+              <Avatar className="h-32 w-32 mb-4">
+  <AvatarImage
+    src={creator.profileImage}
+    alt={creator.name}
+    className="object-cover object-center"
+  />
+  <AvatarFallback className="text-3xl bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+    {creator.name.charAt(0)}
+  </AvatarFallback>
+</Avatar>
+
                 <Button onClick={handleConnect} size="lg" className="w-full md:w-auto">
                   <Mail className="mr-2 h-4 w-4" />
                   Connect via Email

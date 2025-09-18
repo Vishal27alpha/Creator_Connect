@@ -161,12 +161,20 @@ export default function DirectoryPage() {
 import { useState, useEffect, useMemo } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+
+
 import { Creator, CreatorFilters, FOLLOWER_RANGES, NICHES } from '@/types/creator';
 import { CreatorCard } from '@/components/creators/CreatorCard';
 import { CreatorFiltersComponent } from '@/components/creators/CreatorFilters';
-import { Loader2, Users } from 'lucide-react';
+import { Loader2, Users, Sparkles } from "lucide-react";
+
+
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export default function DirectoryPage() {
+  const [aiQuery, setAiQuery] = useState("");
+  const [aiResults, setAiResults] = useState<Creator[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<CreatorFilters>({
@@ -190,32 +198,7 @@ export default function DirectoryPage() {
         id: doc.id,
       })) as Creator[];
 
-      // 🔹 Fetch Instagram followers count for each creator
-      const enrichedCreators = await Promise.all(
-        creatorsData.map(async (creator) => {
-          if (creator.instagramHandle) {
-            try {
-              const res = await fetch('/api/instagram'); // calls our backend API
-              const data = await res.json();
-
-              console.log('Instagram API response:', data);
-
-              return {
-                ...creator,
-                followerCount: data.followers_count || creator.followerCount || 0,
-                bio: creator.bio || '',
-                about: creator.about || '',
-              };
-            } catch (err) {
-              console.error('Error fetching Instagram data:', err);
-              return creator;
-            }
-          }
-          return creator;
-        })
-      );
-
-      setCreators(enrichedCreators);
+      setCreators(creatorsData);
     } catch (error) {
       console.error('Error loading creators:', error);
     } finally {
@@ -223,9 +206,25 @@ export default function DirectoryPage() {
     }
   };
 
+  // ✅ AI Search Function
+  const handleAiSearch = async () => {
+    if (!aiQuery.trim()) return;
+    try {
+      const res = await fetch("/api/aiSearch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: aiQuery }),
+      });
+      const data = await res.json();
+      setAiResults(data.results || []);
+    } catch (err) {
+      console.error("AI search failed", err);
+    }
+  };
+
+  // ✅ Apply regular filters
   const filteredCreators = useMemo(() => {
     return creators.filter((creator) => {
-      // 🔹 Search query filter
       if (filters.searchQuery) {
         const searchLower = filters.searchQuery.toLowerCase();
         const matchesSearch =
@@ -237,20 +236,16 @@ export default function DirectoryPage() {
         if (!matchesSearch) return false;
       }
 
-      // 🔹 Niche filter (supports custom input)
       if (filters.niche && filters.niche !== 'all') {
-        // If user picked a predefined niche → exact match
         if (NICHES.includes(filters.niche)) {
           if (creator.niche !== filters.niche) return false;
         } else {
-          // Custom niche → allow partial match
           if (!creator.niche?.toLowerCase().includes(filters.niche.toLowerCase())) {
             return false;
           }
         }
       }
 
-      // 🔹 Follower range filter
       if (filters.followerRange && filters.followerRange !== 'all') {
         const range = FOLLOWER_RANGES.find((r) => r.label === filters.followerRange);
         if (range && !(creator.followerCount >= range.min && creator.followerCount <= range.max)) {
@@ -258,7 +253,6 @@ export default function DirectoryPage() {
         }
       }
 
-      // 🔹 Location filter
       if (filters.location) {
         const locationLower = filters.location.toLowerCase();
         if (!creator.location.toLowerCase().includes(locationLower)) {
@@ -287,15 +281,46 @@ export default function DirectoryPage() {
         </p>
       </div>
 
+      {/* 🔹 AI Search Input */}
+      <div className="mb-6 flex space-x-2">
+        <Input
+          placeholder="Ask AI... (e.g. fitness creators with 10k+ followers)"
+          value={aiQuery}
+          onChange={(e) => setAiQuery(e.target.value)}
+        />
+<Button
+  onClick={handleAiSearch}
+  variant="outline"  // ✅ outlined button so text is visible
+  className="flex items-center space-x-2 text-purple-600 border-purple-600 hover:bg-purple-50"
+>
+  <Sparkles className="h-4 w-4" />
+  <span>AI Search</span>
+</Button>
+
+
+
+      </div>
+
+      {/* 🔹 If AI results exist → show them */}
+      {aiResults.length > 0 ? (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">AI Search Results</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {aiResults.map((creator) => (
+              <CreatorCard key={creator.id} creator={creator} />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
           <CreatorFiltersComponent filters={filters} onFiltersChange={setFilters} />
         </div>
 
-        {/* Results */}
+        {/* Normal Filtered Results */}
         <div className="lg:col-span-3">
-          {/* Results Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center text-muted-foreground">
               <Users className="h-5 w-5 mr-2" />
@@ -306,7 +331,6 @@ export default function DirectoryPage() {
             </div>
           </div>
 
-          {/* Results Grid */}
           {filteredCreators.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredCreators.map((creator) => (

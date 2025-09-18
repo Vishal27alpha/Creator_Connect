@@ -12,6 +12,7 @@ export interface Creator {
   profileImage?: string;
   createdAt: Date|any;
   updatedAt: Date|any;
+  embedding?: number[];
 }
 
 export interface CreatorFilters {

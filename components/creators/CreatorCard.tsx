@@ -77,12 +77,17 @@ export function CreatorCard({ creator }: CreatorCardProps) {
       <Link href={`/creator/${creator.id}`}>
         <CardHeader className="pb-4">
           <div className="flex items-start space-x-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={creator.profileImage} alt={creator.name} />
-              <AvatarFallback className="text-lg bg-gradient-to-br from-purple-500 to-blue-500 text-white">
-                {creator.name.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+          <Avatar className="h-16 w-16">
+  <AvatarImage
+    src={creator.profileImage}
+    alt={creator.name}
+    className="object-cover"   // ✅ prevents stretching
+  />
+  <AvatarFallback className="text-lg bg-gradient-to-br from-purple-500 to-blue-500 text-white">
+    {creator.name.charAt(0)}
+  </AvatarFallback>
+</Avatar>
+
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold text-foreground">{creator.name}</h3>
 
