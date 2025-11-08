@@ -57,114 +57,159 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-purple-50 via-blue-50 to-green-50 py-20">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Connect with Creators
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Find and collaborate with like-minded content creators for sponsorships, 
-              partnerships, and creative projects. Build your network and grow together.
-            </p>
+    <div className="min-h-screen transition-colors duration-500">
+  {/* Hero Section */}
+  <section 
+    className="relative py-20 bg-gradient-to-br 
+      from-purple-50 via-blue-50 to-green-50 
+      dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 
+      transition-colors duration-500"
+  >
+    {/* Background Image */}
+    <div 
+      className="absolute inset-0 bg-center bg-cover opacity-20 dark:opacity-20 pointer-events-none"
+      style={{ backgroundImage: "url('/insta_pic.png')" }}
+    ></div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {user ? (
-                <>
-                  <Link href="/directory">
-                    <Button size="lg" className="h-14 px-8 text-lg">
-                      <Search className="mr-2 h-5 w-5" />
-                      Browse Creators
-                    </Button>
-                  </Link>
+    {/* Content */}
+    <div className="relative container mx-auto px-4 text-center">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-gray-100 mb-6 transition-colors duration-500">
+          Connect with Creators & Brands
+        </h1>
+        <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 leading-relaxed transition-colors duration-500">
+          Find and collaborate with like-minded content creators for sponsorships, 
+          partnerships, and creative projects. Build your network and grow together.
+        </p>
 
-                  {/* ✅ Only show "My Profile" if user is a creator */}
-                  {user.role === 'creator' && (
-                    <Link href="/profile">
-                      <Button size="lg" variant="outline" className="h-14 px-8 text-lg">
-                        <Users className="mr-2 h-5 w-5" />
-                        My Profile
-                      </Button>
-                    </Link>
-                  )}
-                </>
-              ) : (
-                <Button 
-                  size="lg" 
-                  className="h-14 px-8 text-lg"
-                  onClick={() => setShowRoleModal(true)} // ✅ open modal
-                >
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {user ? (
+            <>
+              <Link href="/directory">
+                <Button size="lg" className="h-14 px-8 text-lg">
+                  <Search className="mr-2 h-5 w-5" />
+                  Browse Creators
                 </Button>
+              </Link>
+
+              {/* ✅ Only show "My Profile" if user is a creator */}
+              {user.role === 'creator' && (
+                <Link href="/profile">
+                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg">
+                    <Users className="mr-2 h-5 w-5" />
+                    My Profile
+                  </Button>
+                </Link>
               )}
-            </div>
-          </div>
+            </>
+          ) : (
+            <Button 
+              size="lg" 
+              className="h-14 px-8 text-lg"
+              onClick={() => setShowRoleModal(true)} // ✅ open modal
+            >
+              Get Started Free
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          )}
         </div>
-      </section>
+      </div>
+    </div>
+    {/* Wave Divider */}
+{/* Wave Divider */}
+<div className="absolute bottom-0 left-0 right-0 overflow-hidden leading-[0]">
+  <svg
+    className="relative block w-full h-20"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 1440 320"
+    preserveAspectRatio="none"
+  >
+    <path
+      fill="rgb(15, 19, 29)"
+      d="M0,192L48,170.7C96,149,192,107,288,117.3C384,128,480,192,576,197.3C672,203,768,149,864,117.3C960,85,1056,75,1152,85.3C1248,96,1344,128,1392,144L1440,160L1440,320L0,320Z"
+    ></path>
+  </svg>
+</div>
+
+
+  </section>
 
       {/* Features Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-foreground">
-              How CreatorConnect Works
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Simple steps to discover, connect, and collaborate with creators in your niche
-            </p>
+{/* Features Section */}
+<section 
+  className="relative py-20 bg-gradient-to-br from-purple-50 via-blue-50 to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
+>
+  {/* Background Image */}
+  <div 
+    className="absolute inset-0 bg-center bg-cover opacity-20 dark:opacity-20"
+    style={{ backgroundImage: "url('/feature-bgm.png')", transform: "scale(1.0)" }}
+  ></div>
+
+  {/* Overlay to improve readability */}
+  <div className="absolute inset-0 bg-white/40 dark:bg-black/40"></div>
+
+  <div className="relative container mx-auto px-4">
+    <div className="text-center mb-16">
+      <h2 className="text-3xl font-bold text-foreground">
+        How CreatorConnect Works
+      </h2>
+      <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        Simple steps to discover, connect, and collaborate with creators in your niche
+      </p>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Card 1 */}
+      <Card className="text-center p-8 transition-transform transform hover:scale-105 hover:-translate-y-2 hover:shadow-2xl duration-300 relative">
+        <CardContent className="space-y-4">
+          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
+            <Users className="h-8 w-8 text-purple-600" />
           </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Create Your Profile
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Set up your creator profile with your Instagram handle, niche, 
+            follower count, and collaboration interests.
+          </p>
+        </CardContent>
+      </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center p-8 hover:shadow-lg transition-shadow">
-              <CardContent className="space-y-4">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                  <Users className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Create Your Profile
-                </h3>
-                <p className="text-gray-600">
-                  Set up your creator profile with your Instagram handle, niche, 
-                  follower count, and collaboration interests.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-8 hover:shadow-lg transition-shadow">
-              <CardContent className="space-y-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                  <Search className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Discover Creators
-                </h3>
-                <p className="text-gray-600">
-                  Browse and filter creators by niche, follower count, location, 
-                  and find perfect collaboration matches.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center p-8 hover:shadow-lg transition-shadow">
-              <CardContent className="space-y-4">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                  <MessageCircle className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Connect & Collaborate
-                </h3>
-                <p className="text-gray-600">
-                  Reach out directly via email to discuss partnerships, 
-                  sponsorships, and creative collaborations.
-                </p>
-              </CardContent>
-            </Card>
+      {/* Card 2 */}
+      <Card className="text-center p-8 transition-transform transform hover:scale-105 hover:-translate-y-2 hover:shadow-2xl duration-300 relative">
+        <CardContent className="space-y-4">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+            <Search className="h-8 w-8 text-blue-600" />
           </div>
-        </div>
-      </section>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Discover Creators
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Browse and filter creators by niche, follower count, location, 
+            and find perfect collaboration matches.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Card 3 */}
+      <Card className="text-center p-8 transition-transform transform hover:scale-105 hover:-translate-y-2 hover:shadow-2xl duration-300 relative">
+        <CardContent className="space-y-4">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+            <MessageCircle className="h-8 w-8 text-green-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Connect & Collaborate
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Reach out directly via email to discuss partnerships, 
+            sponsorships, and creative collaborations.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+</section>
+
 
       {/* CTA Section */}
       <section className="py-20">
