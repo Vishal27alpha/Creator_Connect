@@ -1,3 +1,14 @@
+export interface InstagramPostMetric {
+  postId: string;
+  label: string;
+  likes: number;
+  comments: number;
+  engagement: number;
+  weight: number;
+  weightedEngagement: number;
+  recency: 'recent' | 'older';
+}
+
 export interface Creator {
   id: string;
   uid: string;
@@ -10,6 +21,13 @@ export interface Creator {
   bio: string;
   about?: string;
   profileImage?: string;
+  instagramPostsCount?: number;
+  instagramLikesCount?: number;
+  instagramCommentsCount?: number;
+  instagramSampledPostsCount?: number;
+  instagramEngagementRate?: number;
+  instagramWeightedEngagementRate?: number;
+  instagramPostMetrics?: InstagramPostMetric[];
   createdAt: Date|any;
   updatedAt: Date|any;
   embedding?: number[];
@@ -52,4 +70,3 @@ export const FOLLOWER_RANGES: FollowerRange[] = [
   { label: '500K-1M', min: 500000, max: 1000000 },
   { label: '1M+', min: 1000000, max: Infinity },
 ];
-

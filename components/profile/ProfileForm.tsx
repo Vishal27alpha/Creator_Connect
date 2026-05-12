@@ -139,6 +139,13 @@ export function ProfileForm() {
             instagramHandle: data.username,
             followerCount: data.followers_count ?? 0,
             bio: data.biography ?? "",
+            instagramPostsCount: data.posts_count ?? 0,
+            instagramLikesCount: data.likes_count ?? 0,
+            instagramCommentsCount: data.comments_count ?? 0,
+            instagramSampledPostsCount: data.sampled_posts_count ?? 0,
+            instagramEngagementRate: data.engagement_rate ?? 0,
+            instagramWeightedEngagementRate: data.weighted_engagement_rate ?? 0,
+            instagramPostMetrics: data.post_metrics ?? [],
           }));
           toast({
             title: "Instagram Connected",
@@ -185,6 +192,13 @@ export function ProfileForm() {
         bio: profile.bio || '',
         about: profile.about || '',
         profileImage: profile.profileImage || user.photoURL || '',
+        instagramPostsCount: Number(profile.instagramPostsCount ?? 0) || 0,
+        instagramLikesCount: Number(profile.instagramLikesCount ?? 0) || 0,
+        instagramCommentsCount: Number(profile.instagramCommentsCount ?? 0) || 0,
+        instagramSampledPostsCount: Number(profile.instagramSampledPostsCount ?? 0) || 0,
+        instagramEngagementRate: Number(profile.instagramEngagementRate ?? 0) || 0,
+        instagramWeightedEngagementRate: Number(profile.instagramWeightedEngagementRate ?? 0) || 0,
+        instagramPostMetrics: profile.instagramPostMetrics ?? [],
         createdAt: profile.createdAt || new Date(),
         updatedAt: new Date(),
       };
@@ -430,6 +444,7 @@ export function ProfileForm() {
           name: user.displayName || '',
           email: user.email || '',
           profileImage: user.photoURL || '',
+          followerCount: 0, // guarantee numeric default
         });
       }
     } catch (error) {
@@ -563,7 +578,11 @@ async function generateEmbedding(text: string): Promise<number[]> {
         email: profile.email || user.email || '',
         instagramHandle: profile.instagramHandle || '',
         niche: profile.niche || '',
-        followerCount: Number(profile.followerCount) || 0,
+        //followerCount: Number(profile.followerCount) || 0,
+        followerCount: (() => {
+          const n = Number(profile.followerCount ?? 0);
+          return Number.isFinite(n) ? n : 0;
+        })(),
         location: profile.location || '',
         bio: profile.bio || '',
         about: profile.about || '',
@@ -702,7 +721,8 @@ creatorData.embedding = await generateEmbedding(combinedText);
               <Label>Follower Count</Label>
               <Input
                 type="number"
-                value={profile.followerCount?.toString() || ''}
+                //value={profile.followerCount?.toString() || ''}
+                value={profile.followerCount !== undefined && profile.followerCount !== null ? String(profile.followerCount) : ''}
                 readOnly
               />
             </div>
@@ -757,4 +777,3 @@ creatorData.embedding = await generateEmbedding(combinedText);
     </Card>
   );
 }
-

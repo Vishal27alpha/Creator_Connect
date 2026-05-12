@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { doc, getDoc, collection, getDocs, query, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Creator } from '@/types/creator';
+import { Creator, InstagramPostMetric } from '@/types/creator';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { CreatorCard } from '@/components/creators/CreatorCard';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { 
   Loader2, 
   MapPin, 
@@ -17,14 +18,63 @@ import {
   ExternalLink, 
   Mail,
   Instagram,
-  Calendar
+  Calendar,
+  Heart,
+  MessageCircle,
+  FileText,
+  Activity,
+  Flame
 } from 'lucide-react';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
 export default function CreatorDetailPage() {
   const params = useParams();
   const [creator, setCreator] = useState<Creator | null>(null);
   const [similarCreators, setSimilarCreators] = useState<Creator[]>([]);
   const [loading, setLoading] = useState(true);
+  const postMetrics = useMemo<InstagramPostMetric[]>(
+    () => {
+      const metrics = creator?.instagramPostMetrics;
+      return Array.isArray(metrics) ? metrics : [];
+    },
+    [creator?.instagramPostMetrics]
+  );
+  const chartData = useMemo(
+    () => {
+      const creatorFollowers = Number(creator?.followerCount ?? 0);
+      return postMetrics.map((post) => ({
+        label: post.label.replace('Post ', 'P'),
+        weightedRate:
+          creatorFollowers > 0
+            ? Number((((post.engagement * post.weight) / creatorFollowers) * 100).toFixed(2))
+            : 0,
+        weightLabel: post.weight === 1.5 ? '1.5x recent' : '1.0x older',
+      }));
+    },
+    [creator?.followerCount, postMetrics]
+  );
+  const demoChartData = [
+    { label: 'P1', weightedRate: 56, weightLabel: '1.5x recent' },
+    { label: 'P2', weightedRate: 51, weightLabel: '1.5x recent' },
+    { label: 'P3', weightedRate: 54, weightLabel: '1.5x recent' },
+    { label: 'P4', weightedRate: 53, weightLabel: '1.5x recent' },
+    { label: 'P5', weightedRate: 58, weightLabel: '1.5x recent' },
+    { label: 'P6', weightedRate: 52, weightLabel: '1.0x older' },
+    { label: 'P7', weightedRate: 55, weightLabel: '1.0x older' },
+    { label: 'P8', weightedRate: 54, weightLabel: '1.0x older' },
+    { label: 'P9', weightedRate: 57, weightLabel: '1.0x older' },
+    { label: 'P10', weightedRate: 50, weightLabel: '1.0x older' },
+    { label: 'P11', weightedRate: 53, weightLabel: '1.0x older' },
+    { label: 'P12', weightedRate: 59, weightLabel: '1.0x older' },
+  ];
+  const displayChartData = chartData.length > 0 ? chartData : demoChartData;
+  const isDemoChart = chartData.length === 0;
+  const chartConfig = {
+    weightedRate: {
+      label: 'Weighted ER',
+      color: '#2563eb',
+    },
+  };
 
   useEffect(() => {
     if (params.id) {
@@ -102,6 +152,19 @@ export default function CreatorDetailPage() {
   } catch (err) {
     console.warn("Invalid createdAt format", creator.createdAt);
   }
+
+  const followersCount = Number(creator.followerCount ?? 0);
+  const postsCount = Number(creator.instagramPostsCount ?? 0);
+  const likesCount = Number(creator.instagramLikesCount ?? 0);
+  const commentsCount = Number(creator.instagramCommentsCount ?? 0);
+  const sampledPostsCount = Number(creator.instagramSampledPostsCount ?? 0);
+  const weightedEngagementRate = Number(creator.instagramWeightedEngagementRate ?? 0);
+  const engagementRate =
+    typeof creator.instagramEngagementRate === 'number'
+      ? creator.instagramEngagementRate
+      : followersCount > 0
+        ? Number((((likesCount + commentsCount) / followersCount) * 100).toFixed(2))
+        : 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -194,6 +257,117 @@ export default function CreatorDetailPage() {
       : "No about info yet."}
   </p>
 </div>
+
+  <div className="mt-8 rounded-xl border border-pink-100 bg-gradient-to-br from-pink-50 to-orange-50 p-6">
+    <div className="mb-4 flex items-center gap-2">
+      <Activity className="h-5 w-5 text-pink-600" />
+      <h3 className="text-lg font-bold text-gray-900">Instagram Engagement</h3>
+    </div>
+
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="rounded-lg bg-white/80 p-4 text-center">
+        <Heart className="mx-auto mb-2 h-6 w-6 text-pink-500" />
+        <div className="text-lg font-semibold text-gray-900">{likesCount}</div>
+        <div className="text-sm text-gray-600">Likes</div>
+      </div>
+      <div className="rounded-lg bg-white/80 p-4 text-center">
+        <MessageCircle className="mx-auto mb-2 h-6 w-6 text-orange-500" />
+        <div className="text-lg font-semibold text-gray-900">{commentsCount}</div>
+        <div className="text-sm text-gray-600">Comments</div>
+      </div>
+      <div className="rounded-lg bg-white/80 p-4 text-center">
+        <FileText className="mx-auto mb-2 h-6 w-6 text-blue-500" />
+        <div className="text-lg font-semibold text-gray-900">{postsCount}</div>
+        <div className="text-sm text-gray-600">Posts</div>
+      </div>
+      <div className="rounded-lg bg-white/80 p-4 text-center">
+        <Flame className="mx-auto mb-2 h-6 w-6 text-green-500" />
+        <div className="text-lg font-semibold text-gray-900">{weightedEngagementRate.toFixed(2)}%</div>
+        <div className="text-sm text-gray-600">Weighted ER</div>
+      </div>
+      <div className="rounded-lg bg-white/80 p-4 text-center">
+        <Activity className="mx-auto mb-2 h-6 w-6 text-emerald-500" />
+        <div className="text-lg font-semibold text-gray-900">{engagementRate.toFixed(2)}%</div>
+        <div className="text-sm text-gray-600">Base ER</div>
+      </div>
+    </div>
+
+    <div className="mt-6 rounded-xl border border-slate-800 bg-[#090c12] p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h4 className="text-sm font-semibold text-white">Weighted Engagement Trend</h4>
+          <p className="text-xs text-slate-400">
+            Recent 5 posts carry 1.5x weight. Older posts carry 1.0x weight.
+          </p>
+        </div>
+        <Badge variant="secondary" className="border border-blue-500/30 bg-blue-500/10 text-blue-300">
+          {isDemoChart ? 'Demo preview' : `${sampledPostsCount} posts sampled`}
+        </Badge>
+      </div>
+
+      <ChartContainer
+        config={chartConfig}
+        className="h-[300px] w-full [&_.recharts-cartesian-grid_line]:stroke-white/60 [&_.recharts-cartesian-axis-tick_text]:fill-slate-500"
+      >
+        <LineChart accessibilityLayer data={displayChartData} margin={{ left: 0, right: 6, top: 8, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="6 6" horizontal vertical />
+          <XAxis
+            dataKey="label"
+            tickLine={false}
+            axisLine={{ stroke: 'rgba(255,255,255,0.35)' }}
+            tick={{ fill: '#64748b', fontSize: 12 }}
+            interval="preserveStartEnd"
+          />
+          <YAxis
+            tickLine={false}
+            axisLine={{ stroke: 'rgba(255,255,255,0.35)' }}
+            tick={{ fill: '#64748b', fontSize: 12 }}
+            width={34}
+            domain={[0, 60]}
+            ticks={[0, 20, 40, 60]}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={
+              <ChartTooltipContent
+                labelKey="label"
+                formatter={(value, name, item) => (
+                  <div className="flex w-full items-center justify-between gap-4">
+                    <span className="text-muted-foreground">
+                      {name === 'weightedRate'
+                        ? `${item.payload.weightLabel} weighted ER`
+                        : name}
+                    </span>
+                      <span className="font-mono font-medium text-foreground">
+                      {Number(value).toFixed(2)}%
+                    </span>
+                  </div>
+                )}
+              />
+            }
+          />
+          <Line
+            type="monotone"
+            dataKey="weightedRate"
+            stroke="var(--color-weightedRate)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, fill: 'var(--color-weightedRate)', stroke: '#090c12', strokeWidth: 2 }}
+          />
+        </LineChart>
+      </ChartContainer>
+
+      {isDemoChart && (
+        <p className="mt-3 text-center text-xs text-slate-500">
+          Demo chart preview. Connect Instagram and refresh this creator profile to replace it with live post metrics.
+        </p>
+      )}
+    </div>
+
+    <p className="mt-4 text-sm text-gray-600">
+      Base ER = (Likes + Comments) / Followers x 100. Weighted ER = sum of (Likes + Comments) x post weight / Followers x 100.
+    </p>
+  </div>
 
               </div>
             </div>
